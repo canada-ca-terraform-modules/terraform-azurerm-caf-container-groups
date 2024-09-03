@@ -5,7 +5,7 @@ variable "tags" {
 }
 
 variable "userDefinedString" {
-  description = "(Required) USerDefinedStrin part of the name of the container group"
+  description = "(Required) UserDefinedString part of the name of the container group"
   type        = string
 }
 
