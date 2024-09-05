@@ -14,9 +14,9 @@ resource "azurerm_container_group" "container_group" {
     for_each = try(var.container_group.image_registry_credentials, false) != false ? [1] : []
     content {
       server = var.container_group.image_registry_credentials.server
-      username = var.container_group.image_registry_credentials.username
-      password = var.container_group.image_registry_credentials.password
-      # user_assigned_identity_id = "/subscriptions/a76af5cd-e42a-4ce1-af35-86a309543ed5/resourceGroups/G3Sc-CPMS_MMahdavian_Management-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/testIdentity"
+      username = try(var.container_group.image_registry_credentials.username, null)
+      password = try(var.container_group.image_registry_credentials.password, null)
+      user_assigned_identity_id = try(var.container_group.image_registry_credentials.user_assigned_identity_id, null)
     }
   }
 
@@ -46,7 +46,7 @@ resource "azurerm_container_group" "container_group" {
     for_each = try(var.container_group.identity, null) != null ? [1] : []
     content {
       type = var.container_group.identity.type
-      identity_ids = try(var.container_group.identity.identity_ids)
+      identity_ids = try(var.container_group.identity.identity_ids, [])
     }
   }
 }
@@ -58,5 +58,9 @@ resource "null_resource" "local-exec-stop" {
 
   provisioner "local-exec" {
     command = "az container stop -n ${local.container_group-name}  -g ${local.resource_group_name}"
+  }
+
+  lifecycle {
+    replace_triggered_by = [ azurerm_container_group.container_group ]
   }
 }
