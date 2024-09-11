@@ -61,10 +61,10 @@ One of username/password or user_assigned_identity_id need to be set. This block
 
 | Parameter Name                                        | Possible Values | Required | Default |
 | ----------------------------------------------------- | --------------- | -------- | ------- |
-| `image_registry_credential.server`                    | string          | Yes      | n/a     |
-| `image_registry_credential.username`                  | string          | No       | null    |
-| `image_registry_credential.password`                  | string          | No       | null    |
-| `image_registry_credential.user_assigned_identity_id` | ID              | No       | null    |
+| `server`                    | string          | Yes      | n/a     |
+| `username`                  | string          | No       | null    |
+| `password`                  | string          | No       | null    |
+| `user_assigned_identity_id` | ID              | No       | null    |
 
 #### dns_config Block
 
