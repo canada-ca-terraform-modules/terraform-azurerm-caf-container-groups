@@ -57,7 +57,7 @@ resource "null_resource" "local-exec-stop" {
   depends_on = [ azurerm_container_group.container_group ]
 
   provisioner "local-exec" {
-    command = "az container stop -n ${local.container_group-name}  -g ${local.resource_group_name}"
+    command = "az container stop -n ${local.container_group-name}  -g ${local.resource_group_name} --subscription $ARM_SUBSCRIPTION_ID"
   }
 
   lifecycle {
