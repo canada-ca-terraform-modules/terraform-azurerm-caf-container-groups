@@ -49,6 +49,10 @@ resource "azurerm_container_group" "container_group" {
       identity_ids = try(var.container_group.identity.identity_ids, [])
     }
   }
+
+  lifecycle {
+    ignore_changes = [ container[0].environment_variables ]
+  }
 }
 
 resource "null_resource" "local-exec-stop" {
