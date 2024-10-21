@@ -51,7 +51,7 @@ resource "azurerm_container_group" "container_group" {
   }
 
   lifecycle {
-    ignore_changes = [ container[0].environment_variables ]
+    ignore_changes = [ container ]
   }
 }
 
