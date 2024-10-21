@@ -4,7 +4,7 @@ variable "containerGroup" {
 }
 
 module "containerGroups" {
-  source = "github.com/canada-ca-terraform-modules/terraform-azurerm-caf-container-groups.git?ref=v1.0.1"
+  source = "github.com/canada-ca-terraform-modules/terraform-azurerm-caf-container-groups.git?ref=v1.0.2"
   for_each = var.containerGroup
 
   userDefinedString = each.key
