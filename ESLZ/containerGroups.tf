@@ -10,8 +10,6 @@ module "containerGroups" {
   userDefinedString = each.key
   env = var.env 
   location = var.location
-  group = var.group
-  project = var.project
   container_group = each.value
   resource_groups = local.resource_groups_all
   subnets = local.subnets
