@@ -61,7 +61,20 @@ resource "null_resource" "local-exec-stop" {
   depends_on = [ azurerm_container_group.container_group ]
 
   provisioner "local-exec" {
-    command = "az container stop -n ${local.container_group-name}  -g ${local.resource_group_name} --subscription $ARM_SUBSCRIPTION_ID"
+    command = <<EOT
+    subs="G3Mc-CTO-ENT-MRZ GcPc-CTO-ENT-CORE $ARM_SUBSCRIPTION_ID"
+
+    for SUB in $subs
+    do
+      resource=$(az resource list --subscription $SUB --query "[?name=='${local.container_group-name}']" -o tsv)
+
+      if [ ! -z "$resource" ]; then
+        az container stop -n ${local.container_group-name}  -g ${local.resource_group_name} --subscription $SUB
+        break
+      fi
+    done
+    EOT
+    interpreter = [ "/bin/bash", "-c" ]
   }
 
   lifecycle {
