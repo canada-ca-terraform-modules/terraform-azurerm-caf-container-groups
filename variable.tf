@@ -14,16 +14,6 @@ variable "env" {
   type        = string
 }
 
-variable "group" {
-  description = "(Required) Group value for the container group"
-  type = string
-}
-
-variable "project" {
-  description = "(Required) Project value for the container group"
-  type = string
-}
-
 variable "location" {
   description = "(Required) Azure location where the container group will be placed"
   type = string

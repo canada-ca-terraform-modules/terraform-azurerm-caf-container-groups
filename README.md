@@ -12,9 +12,7 @@
 | container\_group  | Object containing all container group parameters                                                  | `any`         | `{}`              |    no    |
 | env               | (Required) env value                                                                              | `string`      | n/a               |   yes    |
 | extra\_env\_vars  | Variables used in case it is easier to set a container environment variable as a variable in ESLZ | `any`         | `{}`              |    no    |
-| group             | (Required) Group value for the container group                                                    | `string`      | n/a               |   yes    |
 | location          | (Required) Azure location where the container group will be placed                                | `string`      | `"canadacentral"` |    no    |
-| project           | (Required) Project value for the container group                                                  | `string`      | n/a               |   yes    |
 | resource\_groups  | Resource group object containing all resource groups                                              | `any`         | `{}`              |    no    |
 | subnets           | Object containing all subnets in the project                                                      | `any`         | `{}`              |    no    |
 | tags              | Tags to be applied to the container group                                                         | `map(string)` | `{}`              |    no    |

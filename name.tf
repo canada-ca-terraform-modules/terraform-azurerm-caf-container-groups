@@ -1,3 +1,3 @@
 locals {
-  container_group-name                                 = "${var.env}-${var.group}-${var.project}-${var.userDefinedString}"
+  container_group-name = "${var.env}SLD-${var.userDefinedString}-ci"
 }
