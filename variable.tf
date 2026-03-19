@@ -14,6 +14,18 @@ variable "env" {
   type        = string
 }
 
+variable "group" {
+  description = "(Optional) Group value — used to preserve legacy naming convention {env}-{group}-{project}-{userDefinedString}"
+  type        = string
+  default     = null
+}
+
+variable "project" {
+  description = "(Optional) Project value — used to preserve legacy naming convention {env}-{group}-{project}-{userDefinedString}"
+  type        = string
+  default     = null
+}
+
 variable "location" {
   description = "(Required) Azure location where the container group will be placed"
   type        = string

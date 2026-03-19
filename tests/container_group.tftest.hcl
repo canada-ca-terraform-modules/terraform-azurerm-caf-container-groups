@@ -233,7 +233,68 @@ run "no_dns_config" {
 }
 
 # ---------------------------------------------------------------------------
-# Run 8: With diagnostics (Log Analytics)
+# Run 8: Legacy naming (group + project supplied — preserves existing resource names)
+# ---------------------------------------------------------------------------
+run "legacy_naming_group_project" {
+  command = plan
+
+  variables {
+    group   = "CTO"
+    project = "ESLZ"
+    container_group = {
+      resource_group = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/Management"
+      os_type        = "Linux"
+      subnet         = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/net-rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/OZ"
+
+      container = [
+        {
+          name   = "agent"
+          image  = "devopspipeline.azurecr.io/agent:latest"
+          cpu    = 1
+          memory = 1
+        }
+      ]
+    }
+  }
+
+  assert {
+    condition     = azurerm_container_group.container_group.name == "DEV-CTO-ESLZ-pipelineAgent"
+    error_message = "Legacy naming must produce {env}-{group}-{project}-{userDefinedString} when group and project are supplied"
+  }
+}
+
+# ---------------------------------------------------------------------------
+# Run 9: Explicit name override via container_group.name
+# ---------------------------------------------------------------------------
+run "explicit_name_override" {
+  command = plan
+
+  variables {
+    container_group = {
+      name           = "GcDc-CTO-ESLZ-quicktest"
+      resource_group = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/Management"
+      os_type        = "Linux"
+      subnet         = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/net-rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/OZ"
+
+      container = [
+        {
+          name   = "agent"
+          image  = "devopspipeline.azurecr.io/agent:latest"
+          cpu    = 1
+          memory = 1
+        }
+      ]
+    }
+  }
+
+  assert {
+    condition     = azurerm_container_group.container_group.name == "GcDc-CTO-ESLZ-quicktest"
+    error_message = "container_group.name must override computed name when set"
+  }
+}
+
+# ---------------------------------------------------------------------------
+# Run 10: With diagnostics (Log Analytics)
 # ---------------------------------------------------------------------------
 run "with_diagnostics" {
   command = plan
