@@ -59,7 +59,7 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_container_group"></a> [container\_group](#output\_container\_group) | Container group object |
+| <a name="output_container_group"></a> [container\_group](#output\_container\_group) | Container group object, excluding the deprecated network\_profile\_id attribute (referencing the whole resource surfaces a 'Deprecated value used' warning on every plan/apply/test - see README.md's Known Behavior section) |
 | <a name="output_container_group_id"></a> [container\_group\_id](#output\_container\_group\_id) | ID of the container group |
 | <a name="output_container_group_name"></a> [container\_group\_name](#output\_container\_group\_name) | Name of the container group |
 <!-- END_TF_DOCS -->
