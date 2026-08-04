@@ -7,6 +7,7 @@ Terraform module to deploy an Azure Container Group (ACI) following the ESLZ nam
 
 | Name | Version |
 |------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9 |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 5.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | ~> 3.0 |
 
