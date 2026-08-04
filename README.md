@@ -50,6 +50,7 @@ No modules.
 | <a name="input_location"></a> [location](#input\_location) | (Required) Azure location where the container group will be placed | `string` | `"canadacentral"` | no |
 | <a name="input_project"></a> [project](#input\_project) | (Optional) Project value — used to preserve legacy naming convention {env}-{group}-{project}-{userDefinedString} | `string` | `null` | no |
 | <a name="input_resource_groups"></a> [resource\_groups](#input\_resource\_groups) | Resource group object containing all resource groups | `any` | `{}` | no |
+| <a name="input_stop_container_probe_subscriptions"></a> [stop\_container\_probe\_subscriptions](#input\_stop\_container\_probe\_subscriptions) | (Optional) Subscription names/aliases that null\_resource.local-exec-stop searches (in addition to the caller's active $ARM\_SUBSCRIPTION\_ID) to locate an existing container group before running 'az container stop'. Override for tenants/orgs outside the default ESLZ subscriptions. | `list(string)` | <pre>[<br/>  "G3Mc-CTO-ENT-MRZ",<br/>  "GcPc-CTO-ENT-CORE"<br/>]</pre> | no |
 | <a name="input_subnets"></a> [subnets](#input\_subnets) | Object containing all subnets in the project | `any` | `{}` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Tags to be applied to the container group | `map(string)` | `{}` | no |
 | <a name="input_userDefinedString"></a> [userDefinedString](#input\_userDefinedString) | (Required) UserDefinedString part of the name of the container group | `string` | n/a | yes |
