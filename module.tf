@@ -205,6 +205,12 @@ resource "azurerm_container_group" "container_group" {
     }
   }
 
+  # WARNING: azurerm_container_group's `container` block forces replacement on any change
+  # (per provider docs, nearly every argument on this resource is ForceNew). This module
+  # intentionally ignores drift on `container` so routine plans don't propose destroying and
+  # recreating the group; apply container changes explicitly with:
+  #   terragrunt apply -replace='module.containerGroups["<key>"].azurerm_container_group.container_group'
+  # See README.md "Known Behavior" section and ESLZ/containerGroups.tfvars for the caller-facing note.
   lifecycle {
     ignore_changes = [container]
   }
@@ -217,7 +223,7 @@ resource "null_resource" "local-exec-stop" {
 
   provisioner "local-exec" {
     command     = <<-EOT
-      subs="G3Mc-CTO-ENT-MRZ GcPc-CTO-ENT-CORE $ARM_SUBSCRIPTION_ID"
+      subs="${join(" ", var.stop_container_probe_subscriptions)} $ARM_SUBSCRIPTION_ID"
 
       for SUB in $subs
       do

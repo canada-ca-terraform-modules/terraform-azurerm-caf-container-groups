@@ -2,6 +2,16 @@
 
 Terraform module to deploy an Azure Container Group (ACI) following the ESLZ naming convention `{env}SLD-{userDefinedString}-ci`.
 
+## Known Behavior
+
+`azurerm_container_group.container_group` marks the `container` block `ignore_changes` in its `lifecycle` block, because per the [provider docs](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_group) nearly every argument on this resource — including every `container` sub-attribute — forces resource replacement. Without this, routine plans would propose destroying and recreating the group whenever container image/env/command drift is detected. To intentionally apply a container change, run:
+
+```shell
+terragrunt apply -replace='module.containerGroups["<key>"].azurerm_container_group.container_group'
+```
+
+`stop_containers = true` (via `null_resource.local-exec-stop`) searches the subscriptions in `stop_container_probe_subscriptions` (default `["G3Mc-CTO-ENT-MRZ", "GcPc-CTO-ENT-CORE"]`) plus the caller's active `$ARM_SUBSCRIPTION_ID` for an existing container group before calling `az container stop`. Override `stop_container_probe_subscriptions` for tenants/orgs outside the default ESLZ subscriptions.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 

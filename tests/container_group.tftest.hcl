@@ -569,6 +569,11 @@ run "container_optional_fields" {
 
 # ---------------------------------------------------------------------------
 # Run 15: stop_containers enables null_resource helper
+# NOTE: this only asserts the resource is created with count = 1. The actual
+# provisioner body runs an `az container stop` local-exec against real Azure
+# subscriptions (see stop_container_probe_subscriptions in variable.tf) and
+# cannot be meaningfully exercised under mock_provider/terraform test -- there
+# is no equivalent of a live subscription/CLI to assert against here.
 # ---------------------------------------------------------------------------
 run "stop_containers_helper" {
   command = plan
