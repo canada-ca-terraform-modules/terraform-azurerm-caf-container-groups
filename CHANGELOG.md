@@ -8,6 +8,7 @@ The format is based on Keep a Changelog.
 
 ### Changed
 - Upgraded provider constraints to target azurerm 5.x compatibility (`~> 5.0`) and pinned null provider to `~> 3.0`.
+- Rebuilt the `container_group` output as an explicit object (all attributes except `network_profile_id`) instead of the raw resource reference. Outputting the whole resource surfaced a `Deprecated value used` warning on every plan/apply/test run because `network_profile_id` is deprecated on `azurerm_container_group`; the module never sets that argument, so nothing is lost by excluding it from the output.
 - Added Terraform and linting guardrails in CI and repository configs (`.tflint.hcl`, `.gitattributes`, `.gitignore`, workflow updates).
 - Bumped ESLZ module source reference in `ESLZ/containerGroups.tf` from `v1.1.0` to `v1.1.1`.
 - SHA-pinned all GitHub Actions in `terraform-ci.yml`, `documentation.yml`, and `release.yml` (with version comments) per GitHub's supply-chain hardening guidance.
