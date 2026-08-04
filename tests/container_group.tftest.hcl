@@ -340,3 +340,259 @@ run "with_diagnostics" {
     error_message = "diagnostics block should be set when diagnostics variable is provided"
   }
 }
+
+# ---------------------------------------------------------------------------
+# Run 11: DNS label, reuse policy, and zones
+# ---------------------------------------------------------------------------
+run "dns_label_and_zones" {
+  command = plan
+
+  variables {
+    container_group = {
+      resource_group              = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/Management"
+      os_type                     = "Linux"
+      ip_address_type             = "Public"
+      dns_name_label              = "aci-pipeline-agent"
+      dns_name_label_reuse_policy = "Noreuse"
+      zones                       = ["1", "2"]
+
+      container = [
+        {
+          name   = "agent"
+          image  = "devopspipeline.azurecr.io/agent:latest"
+          cpu    = 1
+          memory = 1
+          port   = 80
+        }
+      ]
+    }
+  }
+
+  assert {
+    condition     = azurerm_container_group.container_group.dns_name_label == "aci-pipeline-agent"
+    error_message = "dns_name_label should be set when provided"
+  }
+
+  assert {
+    condition     = azurerm_container_group.container_group.dns_name_label_reuse_policy == "Noreuse"
+    error_message = "dns_name_label_reuse_policy should be set when provided"
+  }
+
+  assert {
+    condition     = length(azurerm_container_group.container_group.zones) == 2
+    error_message = "zones should contain all configured values"
+  }
+}
+
+# ---------------------------------------------------------------------------
+# Run 12: Identity and key vault CMK arguments
+# ---------------------------------------------------------------------------
+run "identity_and_cmk" {
+  command = plan
+
+  variables {
+    container_group = {
+      resource_group                      = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/Management"
+      os_type                             = "Linux"
+      subnet                              = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/net-rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/OZ"
+      key_vault_key_id                    = "https://kv-demo.vault.azure.net/keys/key1/00000000000000000000000000000000"
+      key_vault_user_assigned_identity_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/id-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aci-id"
+
+      identity = {
+        type         = "UserAssigned"
+        identity_ids = ["/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/id-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aci-id"]
+      }
+
+      container = [
+        {
+          name   = "agent"
+          image  = "devopspipeline.azurecr.io/agent:latest"
+          cpu    = 1
+          memory = 1
+        }
+      ]
+    }
+  }
+
+  assert {
+    condition     = azurerm_container_group.container_group.key_vault_key_id == "https://kv-demo.vault.azure.net/keys/key1/00000000000000000000000000000000"
+    error_message = "key_vault_key_id should be set when provided"
+  }
+
+  assert {
+    condition     = length(azurerm_container_group.container_group.identity) == 1
+    error_message = "identity block should be present when identity is configured"
+  }
+}
+
+# ---------------------------------------------------------------------------
+# Run 13: Exposed ports and init_container blocks
+# ---------------------------------------------------------------------------
+run "exposed_ports_and_init_container" {
+  command = plan
+
+  variables {
+    container_group = {
+      resource_group = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/Management"
+      os_type        = "Linux"
+      subnet         = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/net-rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/OZ"
+
+      exposed_port = [
+        { port = 80, protocol = "TCP" },
+        { port = 443, protocol = "TCP" },
+      ]
+
+      init_container = [
+        {
+          name     = "init-app"
+          image    = "busybox:latest"
+          commands = ["/bin/sh", "-c", "echo init"]
+          environment_variables = {
+            INIT_ENV = "value"
+          }
+          secure_environment_variables = {
+            INIT_SECRET = "secret"
+          }
+          volumes = [
+            {
+              name       = "git-volume"
+              mount_path = "/init"
+              git_repo = {
+                url       = "https://example.com/repo.git"
+                directory = "bootstrap"
+              }
+            }
+          ]
+          security = {
+            privilege_enabled = true
+          }
+        }
+      ]
+
+      container = [
+        {
+          name   = "agent"
+          image  = "devopspipeline.azurecr.io/agent:latest"
+          cpu    = 1
+          memory = 1
+          port   = 80
+        }
+      ]
+    }
+  }
+
+  assert {
+    condition     = length(azurerm_container_group.container_group.exposed_port) == 2
+    error_message = "exposed_port should render all configured ports"
+  }
+
+  assert {
+    condition     = length(azurerm_container_group.container_group.init_container) == 1
+    error_message = "init_container should render when configured"
+  }
+}
+
+# ---------------------------------------------------------------------------
+# Run 14: Container optional nested fields (probes, volume, limits, commands)
+# ---------------------------------------------------------------------------
+run "container_optional_fields" {
+  command = plan
+
+  variables {
+    container_group = {
+      resource_group = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/Management"
+      os_type        = "Linux"
+      subnet         = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/net-rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/OZ"
+
+      container = [
+        {
+          name         = "agent"
+          image        = "devopspipeline.azurecr.io/agent:latest"
+          cpu          = 1
+          memory       = 1
+          cpu_limit    = 2
+          memory_limit = 2
+          commands     = ["/bin/sh", "-c", "echo run"]
+
+          secure_environment_variables = {
+            SECRET_VALUE = "abc"
+          }
+
+          volumes = [
+            {
+              name                 = "files"
+              mount_path           = "/mnt/files"
+              read_only            = false
+              storage_account_name = "stacct"
+              storage_account_key  = "key"
+              share_name           = "share"
+            }
+          ]
+
+          readiness_probe = {
+            period_seconds = 10
+            http_get = {
+              path   = "/healthz"
+              port   = 80
+              scheme = "http"
+            }
+          }
+
+          liveness_probe = {
+            period_seconds = 15
+            exec           = ["/bin/sh", "-c", "test -f /tmp/live"]
+          }
+
+          security = {
+            privilege_enabled = true
+          }
+        }
+      ]
+    }
+  }
+
+  assert {
+    condition     = length(azurerm_container_group.container_group.container) == 1
+    error_message = "container block should be present"
+  }
+
+  assert {
+    condition     = length(azurerm_container_group.container_group.container[0].readiness_probe) == 1
+    error_message = "readiness_probe should be present when configured"
+  }
+
+  assert {
+    condition     = length(azurerm_container_group.container_group.container[0].liveness_probe) == 1
+    error_message = "liveness_probe should be present when configured"
+  }
+}
+
+# ---------------------------------------------------------------------------
+# Run 15: stop_containers enables null_resource helper
+# ---------------------------------------------------------------------------
+run "stop_containers_helper" {
+  command = plan
+
+  variables {
+    container_group = {
+      resource_group  = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/Management"
+      os_type         = "Linux"
+      subnet          = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/net-rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/OZ"
+      stop_containers = true
+
+      container = [
+        {
+          name   = "agent"
+          image  = "devopspipeline.azurecr.io/agent:latest"
+          cpu    = 1
+          memory = 1
+        }
+      ]
+    }
+  }
+
+  assert {
+    condition     = length(null_resource.local-exec-stop) == 1
+    error_message = "stop_containers=true should create null_resource.local-exec-stop"
+  }
+}

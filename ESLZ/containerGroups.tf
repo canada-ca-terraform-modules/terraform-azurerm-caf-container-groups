@@ -1,10 +1,14 @@
+terraform {
+  required_version = ">= 1.9"
+}
+
 variable "containerGroup" {
   type    = any
   default = {}
 }
 
 module "containerGroups" {
-  source   = "github.com/canada-ca-terraform-modules/terraform-azurerm-caf-container-groups.git?ref=v1.1.0"
+  source   = "github.com/canada-ca-terraform-modules/terraform-azurerm-caf-container-groups.git?ref=v1.1.1"
   for_each = var.containerGroup
 
   userDefinedString = each.key
