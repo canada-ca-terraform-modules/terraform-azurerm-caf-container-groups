@@ -55,3 +55,9 @@ variable "extra_env_vars" {
   type        = any
   default     = {}
 }
+
+variable "stop_container_probe_subscriptions" {
+  description = "(Optional) Subscription names/aliases that null_resource.local-exec-stop searches (in addition to the caller's active $ARM_SUBSCRIPTION_ID) to locate an existing container group before running 'az container stop'. Override for tenants/orgs outside the default ESLZ subscriptions."
+  type        = list(string)
+  default     = ["G3Mc-CTO-ENT-MRZ", "GcPc-CTO-ENT-CORE"]
+}

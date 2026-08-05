@@ -1,4 +1,5 @@
 # Because of issues with environment variables, Terraform ignores changes to the parameters inside the container block.
+# (see `lifecycle { ignore_changes = [container] }` in module.tf and the "Known Behavior" section of README.md).
 # To change any parameter in the container, you can execute the following command:
 # terragrunt apply -replace='module.containerGroups["pipelineAgent"].azurerm_container_group.container_group'
 containerGroup = {
