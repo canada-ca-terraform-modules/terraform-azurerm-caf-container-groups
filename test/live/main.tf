@@ -1,4 +1,5 @@
 terraform {
+  # no-op touch: triggers live-test.yml's path filter for the workflow-only PR B
   required_version = ">= 1.9"
   required_providers {
     azurerm = {
